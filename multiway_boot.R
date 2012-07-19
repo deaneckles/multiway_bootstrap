@@ -18,6 +18,7 @@ multiway.boot <- function(statistic, R, N,
     for (j in 1:N.groupingFactors) {
       W <- rbind(W, RNG(N.groups[j])[groups.num[,j]])
     }
+    # Observation weights are products of weights for each factor
     w <- apply(W, 2, prod)
     if (verbose) cat(i, " ")
     statistic(..., weights = w)
