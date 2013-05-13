@@ -8,12 +8,14 @@ multiway.boot <- function(statistic, R, N,
                           groups = as.matrix(1:N),
                           verbose = FALSE,
                           RNG = r.double.or.nothing,
+                          .parallel = FALSE,
+                          .progress = 'none',
                           ...) {
   groups.num <- apply(groups, 2, function(x) as.numeric(as.factor(x)))
   N.groups <- apply(groups, 2, function(x) length(unique(x)))
   N.groupingFactors <- ncol(groups)
 
-  llply(1:R, function(i) {
+  llply(1:R, .parallel = .parallel, .progress = .progress, function(i) {
     W <- matrix(nrow = 0, ncol = N)
     for (j in 1:N.groupingFactors) {
       W <- rbind(W, RNG(N.groups[j])[groups.num[,j]])

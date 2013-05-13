@@ -23,11 +23,19 @@ mb.2 <- unlist(mb.2)
 var(mb.2)
 quantile(mb.2, c(.025, .975))
 
+## setup multicore
+library(foreach)
+library(doMC)
+
+registerDoMC()
+
 # compare with (anti-conservative) one-way version
 mb.1<- multiway.boot(statistic = wtd.mean,
-                      R = 500, N = N,
-                      groups = cbind(subject),
-                      x = x)
+                     R = 500, N = N,
+                     groups = cbind(subject),
+                     .progress = 'text',
+                     .parallel = TRUE, ## requires foreach and doMC libraries
+                     x = x)
 mb.1 <- unlist(mb.1)
 var(mb.1)
 quantile(mb.1, c(.025, .975))
