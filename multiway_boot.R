@@ -12,10 +12,29 @@ multiway.boot <- function(statistic, R, N,
   groups.num <- apply(groups, 2, function(x) as.numeric(as.factor(x)))
   N.groups <- apply(groups, 2, function(x) length(unique(x)))
   N.groupingFactors <- ncol(groups)
-
   llply(1:R, function(i) {
     W <- matrix(nrow = 0, ncol = N)
     for (j in 1:N.groupingFactors) {
+      W <- rbind(W, RNG(N.groups[j])[groups.num[,j]])
+    }
+    # Observation weights are products of weights for each factor
+    w <- apply(W, 2, prod)
+    if (verbose) cat(i, " ")
+    statistic(..., weights = w)
+  })
+}
+
+online.multiway.boot <- function(update.statistic, R, N,
+                                 groups = as.matrix(1:N),
+                                 verbose = FALSE,
+                                 RNG = r.double.or.nothing,
+                                 salt = 0,
+                                 ...) {
+  N.groupingFactors <- ncol(groups)
+  llply(1:R, function(i) {
+    W <- matrix(nrow = 0, ncol = N)
+    for (j in 1:N.groupingFactors) {
+      set.seed(
       W <- rbind(W, RNG(N.groups[j])[groups.num[,j]])
     }
     # Observation weights are products of weights for each factor
