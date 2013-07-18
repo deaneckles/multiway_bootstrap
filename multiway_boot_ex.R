@@ -24,13 +24,12 @@ q <- c(alpha / 2, 1 - alpha / 2)
 mb.2 <- multiway.boot(
   statistic = wtd.mean,
   R = 500,
-  N = N,
   groups = cbind(subject, stimulus),
   .progress = 'text',
   x = x
   )
 mb.2 <- unlist(mb.2)
-var(mb.2) # bootstrap estimate of variance of the mean
+sd(mb.2) # bootstrap estimate of standard error of the mean
 qnorm(q, mean(x), sd(mb.2)) # normal approximation
 quantile(mb.2, q) # percentile bootstrap CI
 
@@ -44,13 +43,12 @@ registerDoMC()
 mb.1 <- multiway.boot(
   statistic = wtd.mean,
   R = 500,
-  N = N,
   groups = cbind(subject), # only cluster/block on subject
   .parallel = TRUE, # requires foreach and doMC libraries
   x = x
   )
 mb.1 <- unlist(mb.1)
-var(mb.1)
+sd(mb.1)
 qnorm(q, mean(x), sd(mb.1))
 quantile(mb.1, q)
 
