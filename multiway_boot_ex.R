@@ -1,6 +1,8 @@
 source("multiway_boot.R")
 
 # In this example, we have two grouping factors, subjects and stimuli
+
+# Generate simulated data
 N <- 1e4
 N.subjects <- 100
 N.stimuli <- 20
@@ -10,6 +12,7 @@ subject <- rep(1:100, each = 100)
 stimuli.re <- rlnorm(N.stimuli)
 stimulus <- sample.int(N.stimuli, N, replace = TRUE)
 
+# x has subject, stimulus, and subject-stimulus (error) components
 x <- subjects.re[subject] + stimuli.re[stimulus] + rnorm(N)
 
 # point estimate of mean
@@ -25,7 +28,7 @@ mb.2 <- multiway.boot(
   statistic = wtd.mean,
   R = 500,
   groups = cbind(subject, stimulus),
-  .progress = 'text',
+  .progress = 'text', # can use plyr progress indicators
   x = x
   )
 mb.2 <- unlist(mb.2)
@@ -33,7 +36,7 @@ sd(mb.2) # bootstrap estimate of standard error of the mean
 qnorm(q, mean(x), sd(mb.2)) # normal approximation
 quantile(mb.2, q) # percentile bootstrap CI
 
-# setup multicore
+# setup multicore for demonstration of parallel execution
 library(foreach)
 library(doMC)
 
@@ -44,7 +47,7 @@ mb.1 <- multiway.boot(
   statistic = wtd.mean,
   R = 500,
   groups = cbind(subject), # only cluster/block on subject
-  .parallel = TRUE, # requires foreach and doMC libraries
+  .parallel = TRUE, # can use plyr parallel tools
   x = x
   )
 mb.1 <- unlist(mb.1)
