@@ -4,7 +4,7 @@ from scipy.stats import binom
 import pandas as pd
 from progressbar import ProgressBar
 
-def multiway_boot(df, reps, levels):
+def multiway_boot(df, reps, levels, show_progress=False):
     """
     Generate a sequence of bootstrap samples from a dataframe.
 
@@ -17,8 +17,16 @@ def multiway_boot(df, reps, levels):
     The dataframe must have a hierarchical index for these levels.
     See example below.
     """
+    
+    
+    if show_progress:
+        iterator = ProgressBar(maxval=reps)(range(reps))
+    else:
+        iterator = range(reps)
+
     indexes = [df.groupby(level=l).apply(lambda x:1) for l in levels]
-    for i in range(reps):
+        
+    for i in iterator:
         weight = np.prod([
             pd.Series(
                 2*binom.rvs(1, 0.5, size=ix.shape[0]),
@@ -39,7 +47,7 @@ def example():
     df = pd.DataFrame(np.random.randn(8, 4), index=index)
     
     means = []
-    for rep in multiway_boot(df, 500, ['first', 'second']):
+    for rep in multiway_boot(df, 5000, ['first', 'second']):
         if rep: # in case the dataframe is empty
             means.append(rep[0].mean())
 
